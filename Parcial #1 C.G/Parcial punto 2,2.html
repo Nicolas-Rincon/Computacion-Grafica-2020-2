@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> 2.2 </title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+        #info {
+                position: absolute;
+                padding: 10px;
+                width: 100%;
+                text-align: center;
+                color: #FFFFFF;
+            }
+    </style>
+  </head>
+  <body>
+      <div id="info">
+        
+            Punto 2.2  <br/>
+            Nicolas Rincon  6000358 <br/>
+                       
+        </div>
+      
+        <script src="js/three.min.js"></script>
+        
+		
+            
+    <script>
+        
+        //VARIABLES 
+
+        var scene, aspect, camera, renderer;
+
+
+        init();
+        animate();
+        
+           function init() {
+                scene = new THREE.Scene();
+                aspect = window.innerWidth / window.innerHeight;
+                camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
+                renderer = new THREE.WebGLRenderer();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                document.body.appendChild(renderer.domElement);
+				
+
+        
+			//ELEMENTOS DE ESCENA
+							  
+			var size = 50;
+			var arrowSize = 1;
+			var divisions = size;
+			var origin = new THREE.Vector3( 0, 0, 0 );
+			var x = new THREE.Vector3( 1, 0, 0 );
+			var y = new THREE.Vector3( 0, 1, 0 );
+		  	var z = new THREE.Vector3( 0, 0, 1 );
+			var color1 = new THREE.Color( 0xFFFFFF );
+		  	var color2 = new THREE.Color( 0x333333 );
+		  	var colorR = new THREE.Color( 0xAA0000 );
+		  	var colorG = new THREE.Color( 0x00AA00 );
+		  	var colorB = new THREE.Color( 0x0000AA );
+		  	var colorGd = new THREE.Color( 0x66AA66 );
+		  	
+		  
+        
+            //CREAR LAS FLECHAS QUE INDICAN LOS EJES DE COORDENADAS 3D
+            var arrowX = new THREE.ArrowHelper( x, origin, arrowSize, colorR );
+            var arrowY = new THREE.ArrowHelper( y, origin, arrowSize, colorG );
+            var arrowZ = new THREE.ArrowHelper( z, origin, arrowSize, colorB );
+        
+                 
+               
+            var sphereGeometry = new THREE.SphereGeometry(0.3,32,32);
+            var sphereMaterial = new THREE.MeshBasicMaterial()
+
+        
+        
+            var matTierra = new THREE.MeshBasicMaterial ({color: 0x00AA00, size: 0.1});
+            var matSol = new THREE.MeshBasicMaterial ({color: 0xFFFFFF, size: 0.1});
+            var matLuna = new THREE.MeshBasicMaterial ({color: 0x0000AA, size: 0.1});
+            var matMarte = new THREE.MeshBasicMaterial ({color: 0xAA0000, size: 0.1});
+               var matmercurio = new THREE.MeshBasicMaterial ({color: 0x6666AA, size: 0.1});
+
+        
+            Sol = new THREE.Mesh(sphereGeometry, matSol);  //Sol
+            Sol.applyMatrix( new THREE.Matrix4().makeScale(8,8,8) );
+               
+               
+            tierra = new THREE.Mesh(sphereGeometry, matTierra); //creacion del planeta 1
+            tierra.applyMatrix( new THREE.Matrix4().makeScale(.3,.3,.3) );
+               tierra.applyMatrix( new THREE.Matrix4().makeTranslation(1,0,0) );
+               
+             
+            luna = new THREE.Mesh(sphereGeometry, matLuna);//creacion de la Luna
+               luna.applyMatrix( new THREE.Matrix4().makeScale(.5,.5,.5) );
+               luna.applyMatrix( new THREE.Matrix4().makeTranslation(1,0,0) );
+               
+               
+           
+               tierra2 = new THREE.Mesh(sphereGeometry, matMarte); //creacion del planeta 2
+               tierra2.applyMatrix( new THREE.Matrix4().makeScale(.5,.5,.5) );
+               tierra2.applyMatrix( new THREE.Matrix4().makeTranslation(-2,0,0) );
+               
+               
+               luna2 = new THREE.Mesh(sphereGeometry, matLuna); //creacion de la luna del planeta 2
+               luna2.applyMatrix( new THREE.Matrix4().makeScale(.5,.5,.5) );
+               luna2.applyMatrix( new THREE.Matrix4().makeTranslation(-1,0,0) );
+               
+               
+               tierra3 = new THREE.Mesh(sphereGeometry, matmercurio);// creacion planeta 3
+               tierra3.applyMatrix( new THREE.Matrix4().makeScale(.5,.5,.5) );
+               tierra3.applyMatrix( new THREE.Matrix4().makeTranslation(3,0,0) );
+        
+        
+               //Sistema SOLAR 
+                Sol.add(tierra);
+               Sol.add(tierra2);
+               Sol.add(tierra3);
+               tierra.add(luna);
+               tierra2.add(luna2);
+             
+
+        //Scena
+         
+		      scene.add(Sol );
+               scene.add(arrowX);
+               scene.add(arrowY);
+               scene.add(arrowZ);
+               scene.add(camera);
+        
+            
+        //MOVER LA CAMARA
+			camera.position.x = 0;
+			camera.position.y = 50;	 
+		  	camera.position.z = 0;			
+		  	camera.lookAt( origin );
+
+        }
+    
+               
+                
+        function animate() {
+                render();
+                requestAnimationFrame(animate);
+				
+        }
+    
+			
+        function render() {
+            
+            
+		    camera.lookAt( 0, 0, 0 );
+            var animate = function () {
+				requestAnimationFrame( animate );
+				renderer.render( scene, camera );
+                
+                tierra.rotateY(0.00005);
+                Sol.rotateY(0.000007);
+                tierra2.rotateY(0.00004);
+			};
+            
+            animate();
+        
+
+        }
+			
+		</script>
+	</body>
+</html>
