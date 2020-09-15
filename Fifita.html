@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Transformaciones</title>
+        <style>
+            html, body { margin: 0; padding: 0; overflow: hidden; }
+            #info {
+                position: absolute;
+                padding: 10px;
+                width: 100%;
+                text-align: center;
+                color: #FFFFFF;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="info">
+            FIFA 21<br />
+            Los mejores gráficos<br />
+            
+        </div>
+        <script src="js/three.min.js"></script>
+        <script src="js/controls/OrbitControls.js"></script>
+        <script src='js/libs/dat.gui.min.js'></script>
+        <script>
+            var scene, aspect, camera, renderer, controls;
+            var geometry;
+            var object;
+            var startTime = Date.now();
+
+            var upArrow = false;
+            var downArrow = false;
+            var leftArrow = false;
+            var rightArrow = false;
+            var sButton = false;
+            var wButton = false;
+            var xAxis = true;
+            var yAxis = false;
+            var zAxis = false;
+
+            var angleX = 0;
+            var angleY = 0;
+            var angleZ = 0;
+
+            init();
+            animate();
+
+            function init() {
+                scene = new THREE.Scene();
+                aspect = window.innerWidth / window.innerHeight;
+                camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
+                renderer = new THREE.WebGLRenderer();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                document.body.appendChild(renderer.domElement);
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+                
+
+                //ELEMENTOS DE ESCENA
+
+                var size = 10;
+                var arrowSize = 1;
+                var divisions = size;
+                var origin = new THREE.Vector3(0, 0, 0);
+                var x = new THREE.Vector3(1, 0, 0);
+                var y = new THREE.Vector3(0, 1, 0);
+                var z = new THREE.Vector3(0, 0, 1);
+                var color1 = new THREE.Color(0xFFFFFF);
+                var color2 = new THREE.Color(0x333333);
+                var colorR = new THREE.Color(0xAA0000);
+                var colorG = new THREE.Color(0x00AA00);
+                var colorB = new THREE.Color(0x0000AA);
+                var colorRd = new THREE.Color(0xAA6666);
+                var colorGd = new THREE.Color(0x66AA66);
+                var colorBd = new THREE.Color(0x6666AA);
+
+                //CREAR LAS GRILLAS PARA EL ESCENARIO
+                var axesHelper = new THREE.AxesHelper(size);
+                var gridHelperXY = new THREE.GridHelper(size, divisions, color1, color1);
+                var gridHelperXZ = new THREE.GridHelper(size, divisions, color2, color2);
+                var gridHelperYZ = new THREE.GridHelper(size, divisions, color2, color2);
+
+                //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+                gridHelperXY.rotateOnWorldAxis(x, THREE.Math.degToRad(90));
+                gridHelperXZ.rotateOnWorldAxis(y, THREE.Math.degToRad(90));
+                gridHelperYZ.rotateOnWorldAxis(z, THREE.Math.degToRad(90));
+
+                //CREAR LAS FLECHAS QUE INDICAN LOS EJES DE COORDENADAS 3D
+                var arrowX = new THREE.ArrowHelper(x, origin, arrowSize, colorR);
+                var arrowY = new THREE.ArrowHelper(y, origin, arrowSize, colorG);
+                var arrowZ = new THREE.ArrowHelper(z, origin, arrowSize, colorB);
+
+                //CREAR LAS GEOMETRÍAS
+                
+                var Plano = new THREE.PlaneGeometry(30,24);
+                var Plano1 = new THREE.PlaneGeometry(24,0.5);
+                var Plano2 = new THREE.PlaneGeometry(14 ,0.5);
+                
+                var Plano3 = new THREE.PlaneGeometry(26 ,5);
+                var Plano4 = new THREE.PlaneGeometry(15 ,5);
+                
+                
+                var cylinder = new THREE.CylinderGeometry(0.1,0.1,2.0,25,1);
+                
+                var geoLinea = new THREE.Geometry();
+                geoLinea.vertices.push(new THREE.Vector3( 10,  0.0,  0.0 ) );
+                geoLinea.vertices.push(new THREE.Vector3( -10,  0,  0.0) );
+                
+                var geoLinea2 = new THREE.Geometry();
+                geoLinea2.vertices.push(new THREE.Vector3( 0,  0.0,  5 ) );
+                geoLinea2.vertices.push(new THREE.Vector3( 0,  0, -5) );
+                
+                var geoLinea3 = new THREE.Geometry();
+                geoLinea3.vertices.push(new THREE.Vector3( 2, 0, 0 ) );
+                geoLinea3.vertices.push(new THREE.Vector3( -2, 0, 0) );
+                
+                var geoLinea4 = new THREE.Geometry();
+                geoLinea4.vertices.push(new THREE.Vector3(0, 0, 3 ) );
+                geoLinea4.vertices.push(new THREE.Vector3( 0, 0, -3) );
+                
+                var geoCirculo = new THREE.CircleGeometry( 0.2, 32 );
+                
+                var geoAnillo = new THREE.RingGeometry( 1.97, 2, 32 );
+
+                //CREAR LOS MATERIALES
+                var matLinea = new THREE.LineBasicMaterial( { color: 0xFFFFFF } );
+                
+                var material = new THREE.LineBasicMaterial({ color: 0xFFFFFF, side: THREE.DoubleSide });
+                var matplano = new THREE.MeshBasicMaterial( { color: 0x06C406, side: THREE.DoubleSide } );
+                var matplano1 = new THREE.MeshBasicMaterial( { color: 0xAA0000, side: THREE.DoubleSide } );
+                var matplano2 = new THREE.MeshBasicMaterial( { color: 0xE2790A, side: THREE.DoubleSide } );
+                
+                var matCirculo = new THREE.MeshBasicMaterial( { color: 0xFFFFFF } );
+                
+                var matcilindro = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, side: THREE.DoubleSide } );
+                var matcilindro1 = new THREE.MeshBasicMaterial( { color: 0xAA0000, side: THREE.DoubleSide } );
+                var matcilindro2 = new THREE.MeshBasicMaterial( { color: 0x00AA00, side: THREE.DoubleSide } );
+                var matcilindro3 = new THREE.MeshBasicMaterial( { color: 0x6666AA, side: THREE.DoubleSide } );
+                var matcilindro4 = new THREE.MeshBasicMaterial( { color: 0x0000AA, side: THREE.DoubleSide } );
+
+                //CREAR LOS OBJETOS
+                campo = new THREE.Mesh(Plano, matplano);
+                campo.applyMatrix( new THREE.Matrix4().makeRotationX(1.5705) );
+                campo.applyMatrix( new THREE.Matrix4().makeTranslation(0,-0.01,0) );
+                
+                publicidad1 = new THREE.Mesh(Plano1, matplano1);
+                publicidad1.applyMatrix( new THREE.Matrix4().makeTranslation(0,0.25,-7) );
+                
+                publicidad2 = new THREE.Mesh(Plano2, matplano1);
+                publicidad2.applyMatrix( new THREE.Matrix4().makeTranslation(0,0.25,12) );
+                publicidad2.applyMatrix( new THREE.Matrix4().makeRotationY(1.5705) );
+                
+                publicidad3 = new THREE.Mesh(Plano2, matplano1);
+                publicidad3.applyMatrix( new THREE.Matrix4().makeTranslation(0,0.25,-12) );
+                publicidad3.applyMatrix( new THREE.Matrix4().makeRotationY(1.5705) );
+                
+                publicidad4 = new THREE.Mesh(Plano1, matplano1);
+                publicidad4.applyMatrix( new THREE.Matrix4().makeTranslation(0,0.25,7) );
+                
+                
+                linea = new THREE.Line( geoLinea, matLinea );
+                linea.applyMatrix( new THREE.Matrix4().makeTranslation(0,0,-5) );
+                
+                linea2 = new THREE.Line( geoLinea, matLinea );
+                linea2.applyMatrix( new THREE.Matrix4().makeTranslation(0,0,5) );
+                
+                linea3 = new THREE.Line( geoLinea2, matLinea );
+                linea3.applyMatrix( new THREE.Matrix4().makeTranslation(0,0,0) );
+                
+                linea4 = new THREE.Line( geoLinea2, matLinea );
+                linea4.applyMatrix( new THREE.Matrix4().makeTranslation(10,0,0) );
+                
+                linea5 = new THREE.Line( geoLinea2, matLinea );
+                linea5.applyMatrix( new THREE.Matrix4().makeTranslation(-10,0,0) );
+                
+                linea6 = new THREE.Line( geoLinea3, matLinea );
+                linea6.applyMatrix( new THREE.Matrix4().makeTranslation(-8,0,3) );
+                
+                linea7 = new THREE.Line( geoLinea3, matLinea );
+                linea7.applyMatrix( new THREE.Matrix4().makeTranslation(-8,0,-3) );
+                
+                linea8 = new THREE.Line( geoLinea3, matLinea );
+                linea8.applyMatrix( new THREE.Matrix4().makeTranslation(8,0,3) );
+                
+                linea9 = new THREE.Line( geoLinea3, matLinea );
+                linea9.applyMatrix( new THREE.Matrix4().makeTranslation(8,0,-3) );
+                
+                linea10 = new THREE.Line( geoLinea4, matLinea );
+                linea10.applyMatrix( new THREE.Matrix4().makeTranslation(6  ,0,0) );
+                
+                linea11 = new THREE.Line( geoLinea4, matLinea );
+                linea11.applyMatrix( new THREE.Matrix4().makeTranslation( -6,0,0) );
+                
+                
+                circulo = new THREE.Mesh( geoCirculo, matCirculo );
+                circulo.applyMatrix( new THREE.Matrix4().makeRotationX(-1.5705) );
+                
+                penal1 = new THREE.Mesh( geoCirculo, matCirculo );
+                penal1.applyMatrix( new THREE.Matrix4().makeRotationX(-1.5705) );
+                penal1.applyMatrix( new THREE.Matrix4().makeTranslation( -15,0,0) );
+                penal1.applyMatrix( new THREE.Matrix4().makeScale(0.5,0.5,0.5) );
+                
+                penal2 = new THREE.Mesh( geoCirculo, matCirculo );
+                penal2.applyMatrix( new THREE.Matrix4().makeRotationX(-1.5705) );
+                penal2.applyMatrix( new THREE.Matrix4().makeTranslation( 15,0,0) );
+                penal2.applyMatrix( new THREE.Matrix4().makeScale(0.5,0.5,0.5) );
+                
+                
+                anillo = new THREE.Mesh( geoAnillo, matCirculo );
+                anillo.applyMatrix( new THREE.Matrix4().makeRotationX(-1.5705) );
+                
+                
+                esquina1 = new THREE.Mesh(cylinder, matcilindro1);
+                esquina1.applyMatrix( new THREE.Matrix4().makeTranslation(10,1,5) );
+                
+                esquina2 = new THREE.Mesh(cylinder, matcilindro2);
+                esquina2.applyMatrix( new THREE.Matrix4().makeTranslation(-10,1,5) );
+                
+                esquina3 = new THREE.Mesh(cylinder, matcilindro3);
+                esquina3.applyMatrix( new THREE.Matrix4().makeTranslation(-10,1,-5) );
+                
+                esquina4 = new THREE.Mesh(cylinder, matcilindro4);
+                esquina4.applyMatrix( new THREE.Matrix4().makeTranslation(10,1,-5) );
+                
+                
+                //cancha 1
+                poste = new THREE.Mesh(cylinder, matcilindro);
+                poste.applyMatrix( new THREE.Matrix4().makeTranslation(40,1,7) );
+                poste.applyMatrix( new THREE.Matrix4().makeScale(0.25,0.5,0.25) );
+                
+                poste2 = new THREE.Mesh(cylinder, matcilindro);
+                poste2.applyMatrix( new THREE.Matrix4().makeTranslation(40,1,-7) );
+                poste2.applyMatrix( new THREE.Matrix4().makeScale(0.25,0.5,0.25) );
+                
+                poste3 = new THREE.Mesh(cylinder, matcilindro);
+                poste3.applyMatrix( new THREE.Matrix4().makeTranslation(40,0,-4) );
+                poste3.applyMatrix( new THREE.Matrix4().makeScale(0.25,1.75,0.25) );
+                poste3.applyMatrix( new THREE.Matrix4().makeRotationX(89.54) );
+                
+                
+                //cancha 2
+                poste4= new THREE.Mesh(cylinder, matcilindro);
+                poste4.applyMatrix( new THREE.Matrix4().makeTranslation(-40,1,7) );
+                poste4.applyMatrix( new THREE.Matrix4().makeScale(0.25,0.5,0.25) );
+                
+                poste5 = new THREE.Mesh(cylinder, matcilindro);
+                poste5.applyMatrix( new THREE.Matrix4().makeTranslation(-40,1,-7) );
+                poste5.applyMatrix( new THREE.Matrix4().makeScale(0.25,0.5,0.25) );
+                
+                poste6 = new THREE.Mesh(cylinder, matcilindro);
+                poste6.applyMatrix( new THREE.Matrix4().makeTranslation(-40,0,-4) );
+                poste6.applyMatrix( new THREE.Matrix4().makeScale(0.25,1.75,0.25) );
+                poste6.applyMatrix( new THREE.Matrix4().makeRotationX(89.54) );
+                
+                
+                //tribuna
+                tribuna1 = new THREE.Mesh(Plano3, matplano2);
+                tribuna1.applyMatrix( new THREE.Matrix4().makeTranslation(0,9,-4) );
+                tribuna1.applyMatrix( new THREE.Matrix4().makeRotationX(-1) );
+                
+                tribuna2 = new THREE.Mesh(Plano3, matplano2);
+                tribuna2.applyMatrix( new THREE.Matrix4().makeTranslation(0,9,4) );
+                tribuna2.applyMatrix( new THREE.Matrix4().makeRotationX(1) );
+                
+                tribuna3 = new THREE.Mesh(Plano4, matplano2);
+                tribuna3.applyMatrix( new THREE.Matrix4().makeTranslation(0,13.6,6.8) );
+                tribuna3.applyMatrix( new THREE.Matrix4().makeRotationY(1.5705) );
+                tribuna3.applyMatrix( new THREE.Matrix4().makeRotationZ(-1) );
+                
+                tribuna4 = new THREE.Mesh(Plano4, matplano2);
+                tribuna4.applyMatrix( new THREE.Matrix4().makeTranslation(0,13.6,-6.8) );
+                tribuna4.applyMatrix( new THREE.Matrix4().makeRotationY(1.5705) );
+                tribuna4.applyMatrix( new THREE.Matrix4().makeRotationZ(1) );
+                
+                
+
+                //AGREGAR A LA ESCENA
+                scene.add(campo);
+                scene.add(publicidad1);
+                scene.add(publicidad2);
+                scene.add(publicidad3);
+                scene.add(publicidad4);
+                
+                scene.add(circulo);
+                scene.add(penal1);
+                scene.add(penal2);
+                
+                scene.add(anillo);
+                
+                scene.add(linea);
+                scene.add(linea2);
+                scene.add(linea3);
+                scene.add(linea4);
+                scene.add(linea5);
+                scene.add(linea6);
+                scene.add(linea7);
+                scene.add(linea8);
+                scene.add(linea9);
+                scene.add(linea10);
+                scene.add(linea11);
+                
+                scene.add(esquina1);
+                scene.add(esquina2);
+                scene.add(esquina3);
+                scene.add(esquina4);
+                
+                scene.add(poste);
+                scene.add(poste2);
+                scene.add(poste3);
+                scene.add(poste4);
+                scene.add(poste5);
+                scene.add(poste6);
+                
+                scene.add(tribuna1);
+                scene.add(tribuna2);
+                scene.add(tribuna3);
+                scene.add(tribuna4);
+
+                //MOVER LA CAMARA
+                camera.position.x = 5;
+                camera.position.y = 10;
+                camera.position.z = 10;
+
+                camera.lookAt(origin);
+            }
+            
+            function animate() {
+                render();
+                requestAnimationFrame(animate);
+            }
+
+            function render() {
+                var dtime = Date.now() - startTime;
+
+                
+                camera.lookAt(0, 0, 0);
+                renderer.render(scene, camera);
+            }
+        </script>
+    </body>
+</html>

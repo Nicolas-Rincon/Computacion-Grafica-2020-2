@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Humanoide fachero</title>
+        <style>
+            html, body { margin: 0; padding: 0; overflow: hidden; }
+            #info {
+                position: absolute;
+                padding: 10px;
+                width: 100%;
+                text-align: center;
+                color: #FFFFFF;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="info">MENÚ DE OPCIONES<br/>
+            Usar flechas pa´ moverse.<br/>
+            Usar "W" y "S" para mover brazos.<br/>
+            Usar "R" y "Y" pa mover muñecas.<br/>
+        </div>
+    <script src="js/three.min.js"></script>
+    <script>
+		var scene, aspect, camera, renderer;
+		var geometry1, geometry2;
+		var hips, torso, head, hips2;
+		var leftFoot, leftLeg, leftArm, leftHand;
+		var startTime = Date.now();
+        var leftArm1, leftArm2, leftArm3;
+        
+        var axesHelper = new THREE.AxesHelper( 1 );
+		var axesHelper1 = new THREE.AxesHelper( 1 );
+		var axesHelper2 = new THREE.AxesHelper( 1 );
+		var axesHelper3 = new THREE.AxesHelper( 1 );
+				
+		var upArrow = false;
+		var downArrow = false;
+		var leftArrow = false;
+		var rightArrow = false;
+		var scaleUp = false;
+		var scaleDown = false;
+		var xAxis = true;
+		var yAxis = false;
+		var zAxis = false;
+        
+        var upArrowArm = false;
+		var downArrowArm = false;
+		var upArrowArm2 = false;
+		var downArrowArm2 = false;
+		var upArrowArm3 = false;
+		var downArrowArm3 = false;
+		var leftArrowArm = false;
+		var rightArrowArm = false;
+        
+        var rightArm1, rightArm2;
+		
+		var thetaSum=0;
+        var theta2Sum=0;
+		var positivo=false;
+        var phiSum=0;
+		var phi2Sum=0;
+		
+		init();
+		animate();
+	
+		function init(){
+			scene = new THREE.Scene();
+			aspect = window.innerWidth / window.innerHeight;
+			camera = new THREE.PerspectiveCamera( 45, aspect, 0.1, 1000);
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+				  			
+			//EVENTOS DE TECLADO
+			
+			var onKeyDown = function ( event ) {
+				switch ( event.keyCode ) {
+					case 38: // TRASLADAR ADELANTE
+						upArrow = true;
+						break;
+					case 40: // TRASLADAR ATRÁS
+						downArrow = true;
+						break;
+                    case 37: // ROTAR CW
+						leftArrow = true;
+						break;
+					case 39: // ROTAR CCW
+						rightArrow = true;
+						break;
+					case 83: // Mov brazos direccion abajo
+						downArrowArm = true;
+						break;
+					case 87: // Mov brazos direccion arriba
+						upArrowArm = true;
+						break;
+					
+                    case 84: // ROTAR CW
+						leftArrowArm = true;
+						break;
+					case 71: // ROTAR CCW
+						rightArrowArm = true;
+						break;
+					case 70: // ROTAR SEGUNDO ESLABON
+						upArrowArm2 = true;
+						break;
+					case 72: // ROTAR SEGUNDO ESLABON - SENTIDO CONTRARIO
+						downArrowArm2 = true;
+						break;
+					case 82: // ROTAR TERCER ESLABON
+						upArrowArm3 = true;
+						break;
+					case 89: // ROTAR TERCER ESLABON - SENTIDO CONTRARIO
+						downArrowArm3 = true;
+						break;
+				}
+			};	  
+		  			
+			var onKeyUp = function ( event ) {
+				switch ( event.keyCode ) {
+					case 38: // TRASLADAR
+						upArrow = false;
+						break;
+					case 40: // TRASLADAR
+						downArrow = false;
+						break;
+					case 37: // ROTAR CW
+						leftArrow = false;
+						break;
+					case 39: // ROTAR CCW
+						rightArrow = false;
+						break;
+					case 83: // ESCALA AGRANDAR
+						downArrowArm = false;
+						break;
+					case 87: // ESCALA DISMINUIR
+						upArrowArm = false;
+						break;
+                    case 84: // TRASLADAR
+						leftArrowArm = false;
+						break;
+					case 71: // TRASLADAR  
+						rightArrowArm = false;
+						break;
+					case 70: // ESCALA AGRANDAR
+						upArrowArm2 = false;
+						break;
+					case 72: // ESCALA DISMINUIR
+						downArrowArm2 = false;
+						break;
+					case 82: // ESCALA AGRANDAR  muñecas
+						upArrowArm3 = false;
+						break;
+					case 89: // ESCALA DISMINUIR
+						downArrowArm3 = false;
+						break;
+				}
+			};	  	
+			
+			document.addEventListener( 'keydown', onKeyDown, false );
+			document.addEventListener( 'keyup', onKeyUp, false );
+			
+			//ELEMENTOS DE ESCENA
+							  
+			var size = 10;
+			var arrowSize = 1;
+			var divisions = size;
+			var origin = new THREE.Vector3( 0, 0, 0 );
+			var x = new THREE.Vector3( 1, 0, 0 );
+			var y = new THREE.Vector3( 0, 1, 0 );
+		  	var z = new THREE.Vector3( 0, 0, 1 );
+			var color1 = new THREE.Color( 0xFFFFFF );
+		  	var color2 = new THREE.Color( 0x333333 );
+		  	var colorR = new THREE.Color( 0xAA0000 );
+		  	var colorG = new THREE.Color( 0x00AA00 );
+		  	var colorB = new THREE.Color( 0x0000AA );
+			var colorRd = new THREE.Color( 0xAA6666 );
+		  	var colorGd = new THREE.Color( 0x66AA66 );
+		  	var colorBd = new THREE.Color( 0x6666AA );
+		  
+		  	//CREAR LAS GRILLAS PARA EL ESCENARIO
+		  	var axesHelper1 = new THREE.AxesHelper( size/10 );
+			var axesHelper2 = new THREE.AxesHelper( size/10 );
+			var axesHelper3 = new THREE.AxesHelper( size/10 );
+		  	var gridHelperXY = new THREE.GridHelper( size, divisions, color1, color1);
+		  	var gridHelperXZ = new THREE.GridHelper( size, divisions, color2, color2 );
+		  	var gridHelperYZ = new THREE.GridHelper( size, divisions, color2, color2 );
+            
+            //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+            gridHelperXY.rotateOnWorldAxis ( x, THREE.Math.degToRad(90) );
+            gridHelperXZ.rotateOnWorldAxis ( y, THREE.Math.degToRad(90) );
+            gridHelperYZ.rotateOnWorldAxis ( z, THREE.Math.degToRad(90) );
+            
+            //CREAR LAS FLECHAS QUE INDICAN LOS EJES DE COORDENADAS 3D
+            var arrowX = new THREE.ArrowHelper( x, origin, arrowSize, colorR );
+            var arrowY = new THREE.ArrowHelper( y, origin, arrowSize, colorG );
+            var arrowZ = new THREE.ArrowHelper( z, origin, arrowSize, colorB );
+			
+			//CREAR LAS GEOMETRÍAS
+			geometry2 = new THREE.CylinderGeometry( .5, .5, 1, 40 );
+			for ( var i = 0; i < geometry2.faces.length; i++) { 
+				if( geometry2.faces[i].normal.y != 0) { 
+					geometry2.faces[i].color = colorGd; 
+				} 
+			}
+            
+			
+			//CREAR LOS MATERIALES
+			var material = new THREE.MeshBasicMaterial( { color: 0xfaa572, size: 0.1 } );
+            var material2 = new THREE.MeshBasicMaterial( { color: 0xCC00CC, size: 0.1 } );
+            var material3 = new THREE.MeshBasicMaterial( { color: 0x00913f, size: 0.1 } );
+            var material4 = new THREE.MeshBasicMaterial( { color: 0xc93c20, size: 0.1 } );
+            var matLinea = new THREE.LineBasicMaterial( { color: 0xCC00CC} );
+             var matRec = new THREE.PointsMaterial( { color: 0xCC00CC, size: 0.1 } );
+			
+			//CREAR LOS OBJETOS
+			hips = new THREE.Mesh( geometry2, material );	//CUBO
+			leftFoot = hips.clone();
+            
+            hips2 = new THREE.Line( geometry2, material );  // Cilindro mayor
+			
+			//torso = new THREE.Mesh( geometry2, material ); //CILINDRO
+			leftLeg = hips.clone();
+			
+			leftLeg.applyMatrix( new THREE.Matrix4().makeScale(.5,2,.5) );
+			rightLeg = leftLeg.clone();
+			leftLeg.applyMatrix( new THREE.Matrix4().makeTranslation(-.5,-1,0) );
+			rightLeg.applyMatrix( new THREE.Matrix4().makeTranslation( .5,-1,0) );
+			
+			rightFoot = leftFoot.clone();
+			leftFoot.applyMatrix( new THREE.Matrix4().getInverse( leftLeg.matrix ) );
+			leftFoot.applyMatrix( new THREE.Matrix4().makeScale(.5,.5,1) );
+			rightFoot.applyMatrix( new THREE.Matrix4().getInverse( rightLeg.matrix ) );
+			rightFoot.applyMatrix( new THREE.Matrix4().makeScale(.5,.5,1) );
+			leftFoot.applyMatrix( new THREE.Matrix4().makeTranslation(-.5,-.75,0) );
+			rightFoot.applyMatrix( new THREE.Matrix4().makeTranslation(.5,-.75,0) );
+			
+			hips.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 1, 0) );	
+            hips2.applyMatrix( new THREE.Matrix4().makeTranslation(0,1,0) );
+            
+			leftArm1 = new THREE.Line( geometry2, material2 ); //CILINDRO y brazos izq.
+			leftArm2 = new THREE.Line( geometry2, material2 ); //CILINDRO
+			leftArm3 = new THREE.Line( geometry2, material3 ); //CILINDRO
+            
+            axesHelper.applyMatrix( new THREE.Matrix4().makeTranslation(0,1.5,0) );
+			
+			//axesHelper.add(hips2);
+			axesHelper.add(axesHelper1);
+			
+			axesHelper1.add(leftArm1);
+			//axesHelper1.add(axesHelper2);
+			
+			leftArm1.applyMatrix( new THREE.Matrix4().makeTranslation(1.2,0.5,0) );
+            leftArm1.applyMatrix( new THREE.Matrix4().makeScale(0.5,1.2,0.5) );
+			axesHelper2.applyMatrix( new THREE.Matrix4().makeTranslation(0,1,0) );
+			
+			axesHelper1.add(axesHelper3);
+			
+			axesHelper3.applyMatrix( new THREE.Matrix4().makeTranslation(0,1.8,0) );
+			
+			axesHelper3.add(leftArm3);
+			
+			leftArm3.applyMatrix( new THREE.Matrix4().makeTranslation(0.5,1.2,0) );
+			leftArm3.applyMatrix( new THREE.Matrix4().makeScale(0.5,0.5,0.5) );
+			
+            
+            
+            rightArm1 = new THREE.Line( geometry2, material2 ); //CILINDRO y brazos izq.
+			rightArm2 = new THREE.Line( geometry2, material3 );
+            
+            axesHelper1.add(rightArm1);
+            
+            rightArm1.applyMatrix( new THREE.Matrix4().makeTranslation(-1.2,0.5,0) );
+            rightArm1.applyMatrix( new THREE.Matrix4().makeScale(0.5,1.2,0.5) );
+            
+            axesHelper3.add(rightArm2);
+            
+            rightArm2.applyMatrix( new THREE.Matrix4().makeTranslation(-0.5,1.2,0) );
+			rightArm2.applyMatrix( new THREE.Matrix4().makeScale(0.5,0.5,0.5) );
+            
+            
+            head = new THREE.Line( geometry2, material3 );
+            head.applyMatrix( new THREE.Matrix4().makeScale(.5,.75,.5) );
+            head.applyMatrix( new THREE.Matrix4().makeTranslation(0,1.9,0) );
+            
+            
+			hips.add(leftLeg);
+			hips.add(rightLeg);
+            hips.add(hips2);
+            hips.add(head);
+			leftLeg.add(leftFoot);
+			rightLeg.add(rightFoot);
+            hips2.add(rightArm1);
+            hips2.add(leftArm1);
+            rightArm1.add(rightArm2);
+            leftArm1.add(leftArm3);
+		
+		  	//AGREGAR A LA ESCENA
+            scene.add( gridHelperXZ );
+		  	scene.add( arrowX );	
+		  	scene.add( arrowY );	
+		  	scene.add( arrowZ );	
+			scene.add( hips );
+			scene.add( axesHelper );
+            
+			
+			//MOVER LA CAMARA
+			camera.position.x = 10;
+			camera.position.y = 3;	 
+		  	camera.position.z = 10;			
+		  	camera.lookAt( origin );
+			
+			renderer.render( scene, camera );
+			}
+    
+    function animate() {
+        render();
+        requestAnimationFrame( animate );
+    }
+    
+    function render(){
+        var dtime = Date.now()-startTime;
+		var tx=0, ty=0, tz=0;	//Variables para traslacion
+		var sc = 1;				//Variable para escala
+		var theta=0;			//Variable para ángulo de rotacion de piernas
+        var theta2=0;           //Vaiable para angulo de rotacion de brazp
+ 		var sigma=0;			//Variable para ángulo de rotación de caderas
+        var phi=0;				//Variable para ángulo de rotacion de SEGUNDO ESLABON
+		var phi2=0;				//Variable para ángulo de rotacion de TERCER ESLABON
+		
+		if(thetaSum>=60*Math.PI/180)   
+			positivo = false;
+		if(thetaSum<=-60*Math.PI/180)
+			positivo = true;
+		
+		if(upArrow) {
+			tx=0; ty=0; tz=.1;
+			if(positivo)
+				theta = .1;
+			else
+				theta = -.1;
+		}
+		if(downArrow) {
+			tx=0; ty=0; tz=-.1;
+			if(positivo)
+				theta = .1;
+			else
+				theta = -.1;
+		}
+		thetaSum+=theta;
+		
+		if(rightArrow)
+			sigma = -.1;
+		if(leftArrow)
+			sigma = .1;
+		
+		//MATRIZ DE TRASLACIÓN
+		var t = new THREE.Matrix4();
+		t.set( 	1, 0, 0, tx,
+				0, 1, 0, ty, 
+				0, 0, 1, tz,
+				0, 0, 0, 1	);
+		
+		hips.matrix.multiply(t);   //APLICAR LA TRASLACIÓN A NIVEL LOCAL
+		
+		//ROTACIONES
+		var ct1 = Math.cos(theta);
+		var ct2 = Math.cos(-theta);
+		var cs = Math.cos(sigma);
+		var st1 = Math.sin(theta);
+		var st2 = Math.sin(-theta);
+		var ss = Math.sin(sigma);
+		var r = new THREE.Matrix4();
+		var r1 = new THREE.Matrix4();
+		var r2 = new THREE.Matrix4();
+
+		//MATRIZ DE ROTACIÓN EN EJE Y
+		r.set( 	   cs,  0, ss, 0,
+					0,  1,  0, 0, 
+				  -ss,  0, cs, 0,
+					0,  0,  0, 1 );	
+		//MATRICES DE ROTACIÓN EN EJE LOCAL DE PIERNAS	
+		r1.set( 	1,  0,  0, 0,
+					0, ct1,-st1, 0, 
+					0, st1, ct1, 0,
+					0,  0,  0, 1 );	
+        
+		r2.set( 	1,  0,  0, 0,
+					0, ct2,-st2, 0, 
+					0, st2, ct2, 0,
+					0,  0,  0, 1 );							
+		
+		//ROTACION EN UN EJE PARALELO
+		var tempMatrix = new THREE.Matrix4();
+		tempMatrix.copyPosition( hips.matrix );
+		hips.applyMatrix( new THREE.Matrix4().getInverse(tempMatrix) );
+		hips.applyMatrix(r);
+		hips.applyMatrix( tempMatrix );
+
+		leftLeg.applyMatrix(r2);
+		rightLeg.applyMatrix(r1);
+        
+        //PRIMER ESLABON
+		if(upArrowArm) {
+			theta = .1;
+		}
+		if(downArrowArm) {
+			theta = -.1;
+		}
+		theta2Sum-=theta2;
+		
+		if(theta2Sum<=90*Math.PI/180 || theta2Sum>=90*Math.PI/180){
+			theta2Sum-=theta2;
+			theta2 = 0;
+		}
+        /*if(theta2Sum>=60*Math.PI/180)   
+			positivo = false;
+		if(theta2Sum<=-60*Math.PI/180)
+			positivo = true;*/
+		
+		//SEGUNDO ESLABON
+		if(upArrowArm2) {
+			phi = .1;
+		}
+		if(downArrowArm2){ 
+			phi = -.1;
+		}
+		phiSum+=phi;
+		
+		if(phiSum<0 || phiSum>=90*Math.PI/180){
+			phiSum-=phi;
+			phi = 0;
+		}
+		
+		//TERCER ESLABON
+		if(upArrowArm3) {
+			phi2 = .1;
+		}
+		if(downArrowArm3) {
+			phi2 = -.1;
+		}
+		phi2Sum+=phi2;
+		
+		if(phi2Sum<-90*Math.PI/180 || phi2Sum>=90*Math.PI/180){
+			phi2Sum-=phi2;
+			phi2 = 0;
+		}
+
+		if(rightArrowArm)
+			sigma = -.1;
+		if(leftArrowArm)
+			sigma = .1;
+			
+		console.log(thetaSum);
+		console.log(phiSum);
+		
+		//ROTACIONES
+		var csA = Math.cos(sigma);
+		var ssA = Math.sin(sigma);
+		
+		var ct1A = Math.cos(theta);
+		var st1A = Math.sin(theta);
+		
+		var ct2A = Math.cos(phi);
+		var st2A = Math.sin(phi);
+		
+		var ct3A = Math.cos(phi2);
+		var st3A = Math.sin(phi2);
+		
+		var rA = new THREE.Matrix4();
+		var r1A = new THREE.Matrix4();
+		var r2A = new THREE.Matrix4();
+		var r3A = new THREE.Matrix4();
+
+		//MATRIZ DE ROTACIÓN EN EJE Y
+		rA.set( 	   csA,  0, ssA, 0,
+					0,  1,  0, 0, 
+				  -ssA,  0, csA, 0,
+					0,  0,  0, 1 );	
+		//MATRICES DE ROTACIÓN EN EJE LOCAL DEL PRIMER ESLABON	
+		r1A.set(     1,   0,   0,   0,
+					0, ct1A, st1A,   0, 
+				    0,-st1A, ct1A,   0,
+					0,   0,   0,   1 );	
+		//MATRICES DE ROTACIÓN EN EJE LOCAL DEL SEGUNDO ESLABON				
+		r2A.set(     1,   0,   0,   0,
+					0, ct2A, st2A,   0, 
+				    0,-st2A, ct2A,   0,
+					0,   0,   0,   1 );	
+		//MATRICES DE ROTACIÓN EN EJE LOCAL DEL TERCER ESLABON				
+		r3A.set(     1,   0,   0,   0,
+					0, ct3A, -st3A,   0, 
+				    0, st3A, ct3A,   0,
+					0,   0,   0,   1 );							
+		
+		axesHelper.applyMatrix( rA );
+		axesHelper1.applyMatrix( r1A );
+		
+		//ROTACION EN UN EJE PARALELO - PRIMER ESLABON
+		var tempMatrix = new THREE.Matrix4();
+		tempMatrix.copy( axesHelper2.matrix );
+		axesHelper2.applyMatrix( new THREE.Matrix4().getInverse( tempMatrix ) );
+		axesHelper2.applyMatrix( r2A );
+		axesHelper2.applyMatrix( tempMatrix );
+
+		var tempMatrix3 = new THREE.Matrix4();
+		tempMatrix3.copyPosition( axesHelper3.matrix );
+		leftArm3.applyMatrix( new THREE.Matrix4().getInverse( tempMatrix3 ) );
+		leftArm3.applyMatrix( r3A );
+		leftArm3.applyMatrix( tempMatrix3 );
+        
+        rightArm2.applyMatrix( new THREE.Matrix4().getInverse( tempMatrix3 ) );
+		rightArm2.applyMatrix( r3A );
+		rightArm2.applyMatrix( tempMatrix3 );
+        
+        leftArm1.applyMatrix( new THREE.Matrix4().getInverse( tempMatrix3 ) );
+		leftArm1.applyMatrix( r1A );
+		leftArm1.applyMatrix( tempMatrix3 );
+        
+        rightArm1.applyMatrix( new THREE.Matrix4().getInverse( tempMatrix3 ) );
+		rightArm1.applyMatrix( r1A );
+		rightArm1.applyMatrix( tempMatrix3 );
+				
+        camera.lookAt( 0, 0, 0 );
+        renderer.render( scene, camera );
+    }
+    </script>
+  </body>
+</html>
