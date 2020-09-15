@@ -91,7 +91,7 @@
 
                 //CREAR LAS GEOMETRÍAS
                 
-                var Plano = new THREE.PlaneGeometry(30,24);
+                var Plano = new THREE.PlaneGeometry(36,24);
                 var Plano1 = new THREE.PlaneGeometry(24,0.5);
                 var Plano2 = new THREE.PlaneGeometry(14 ,0.5);
                 
@@ -136,6 +136,7 @@
                 var matcilindro2 = new THREE.MeshBasicMaterial( { color: 0x00AA00, side: THREE.DoubleSide } );
                 var matcilindro3 = new THREE.MeshBasicMaterial( { color: 0x6666AA, side: THREE.DoubleSide } );
                 var matcilindro4 = new THREE.MeshBasicMaterial( { color: 0x0000AA, side: THREE.DoubleSide } );
+                var matcilindroE = new THREE.MeshBasicMaterial( { color: 0x90A096, side: THREE.DoubleSide } );
 
                 //CREAR LOS OBJETOS
                 campo = new THREE.Mesh(Plano, matplano);
@@ -272,6 +273,57 @@
                 tribuna4.applyMatrix( new THREE.Matrix4().makeRotationZ(1) );
                 
                 
+                //soportes tribunas
+                soporte1 = new THREE.Mesh(cylinder, matcilindro);
+                soporte1.applyMatrix( new THREE.Matrix4().makeTranslation(0,1,-11.2) );
+                soporte1.applyMatrix( new THREE.Matrix4().makeScale(1,1.2,1) );
+                
+                soporte2 = new THREE.Mesh(cylinder, matcilindro);
+                soporte2.applyMatrix( new THREE.Matrix4().makeTranslation(10,1,-11.2) );
+                soporte2.applyMatrix( new THREE.Matrix4().makeScale(1,1.2,1) );
+                
+                soporte3 = new THREE.Mesh(cylinder, matcilindro);
+                soporte3.applyMatrix( new THREE.Matrix4().makeTranslation(-10,1,-11.2) );
+                soporte3.applyMatrix( new THREE.Matrix4().makeScale(1,1.2,1) );
+                
+                soporte4 = new THREE.Mesh(cylinder, matcilindro);
+                soporte4.applyMatrix( new THREE.Matrix4().makeTranslation(0,1,11.2) );
+                soporte4.applyMatrix( new THREE.Matrix4().makeScale(1,1.2,1) );
+                
+                soporte5 = new THREE.Mesh(cylinder, matcilindro);
+                soporte5.applyMatrix( new THREE.Matrix4().makeTranslation(10,1,11.2) );
+                soporte5.applyMatrix( new THREE.Matrix4().makeScale(1,1.2,1) );
+                
+                soporte6 = new THREE.Mesh(cylinder, matcilindro);
+                soporte6.applyMatrix( new THREE.Matrix4().makeTranslation(-10,1,11.2) );
+                soporte6.applyMatrix( new THREE.Matrix4().makeScale(1,1.2,1) );
+                
+                soporte7 = new THREE.Mesh(cylinder, matcilindro);
+                soporte7.applyMatrix( new THREE.Matrix4().makeTranslation(16.4,1,3.4) );
+                soporte7.applyMatrix( new THREE.Matrix4().makeScale(1,1.2,1) );
+                
+                soporte8 = new THREE.Mesh(cylinder, matcilindro);
+                soporte8.applyMatrix( new THREE.Matrix4().makeTranslation(16.4,1,-3.4) );
+                soporte8.applyMatrix( new THREE.Matrix4().makeScale(1,1.2,1) );
+                
+                soporte9 = new THREE.Mesh(cylinder, matcilindro);
+                soporte9.applyMatrix( new THREE.Matrix4().makeTranslation(-16.4,1,3.4) );
+                soporte9.applyMatrix( new THREE.Matrix4().makeScale(1,1.2,1) );
+                
+                soporte10 = new THREE.Mesh(cylinder, matcilindro);
+                soporte10.applyMatrix( new THREE.Matrix4().makeTranslation(-16.4,1,-3.4) );
+                soporte10.applyMatrix( new THREE.Matrix4().makeScale(1,1.2,1) );
+                
+                
+                // edificios porque si :v
+                edificio = new THREE.Mesh(cylinder, matcilindroE);
+                edificio.applyMatrix( new THREE.Matrix4().makeScale(15,2,15) );
+                edificio.applyMatrix( new THREE.Matrix4().makeTranslation(14.5,2,-9) );
+                
+                edificio2 = new THREE.Mesh(cylinder, matcilindroE);
+                edificio2.applyMatrix( new THREE.Matrix4().makeScale(15,2,15) );
+                edificio2.applyMatrix( new THREE.Matrix4().makeTranslation(-14.5,2,-9) );
+                
 
                 //AGREGAR A LA ESCENA
                 scene.add(campo);
@@ -314,6 +366,20 @@
                 scene.add(tribuna2);
                 scene.add(tribuna3);
                 scene.add(tribuna4);
+                
+                scene.add(soporte1);
+                scene.add(soporte2);
+                scene.add(soporte3);
+                scene.add(soporte4);
+                scene.add(soporte5);
+                scene.add(soporte6);
+                scene.add(soporte7);
+                scene.add(soporte8);
+                scene.add(soporte9);
+                scene.add(soporte10);
+                
+                scene.add(edificio);
+                scene.add(edificio2);
 
                 //MOVER LA CAMARA
                 camera.position.x = 5;
