@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
     <head>
@@ -420,3 +421,427 @@
         </script>
     </body>
 </html>
+=======
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Figura Humana</title>
+        <style>
+            html, body { margin: 0; padding: 0; overflow: hidden; }
+            #info {
+                position: absolute;
+                padding: 10px;
+                width: 100%;
+                text-align: center;
+                color: #FFFFFF;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="info">
+            ROBOTSIN<br />
+            ANDRES HERNANDEZ, JULIAN VILLARRAGA y NICOLAS RINCON<br />
+            
+        </div>
+        <script src="js/three.min.js"></script>
+        <script src="js/controls/OrbitControls.js"></script>
+        <script src='js/libs/dat.gui.min.js'></script>
+		<script src='js/libs/stats.min.js'></script>
+        <script>
+            var scene, aspect, camera, renderer, controls;
+            var geometry;
+            var object;
+            var startTime = Date.now();
+
+            var angleX = 0;
+            var angleY = 0;
+            var angleZ = 0;
+            
+            var anguloPDX = 0;
+            var anguloPDY = 0;
+            var anguloPDZ = 0;
+            var anguloPIX = 0;
+            var anguloPIY = 0;
+            var anguloPIZ = 0;
+            
+            var anguloRDX = 0;
+            var anguloRDY = 0;
+            var anguloRDZ = 0;
+            var anguloRIX = 0;
+            var anguloRIY = 0;
+            var anguloRIZ = 0;
+            
+            var anguloHDX = 0;
+            var anguloHDY = 0;
+            var anguloHDZ = 0;
+            var anguloHIX = 0;
+            var anguloHIY = 0;
+            var anguloHIZ = 0;
+            
+            var anguloCDX = 0;
+            var anguloCDY = 0;
+            var anguloCDZ = 0;
+            var anguloCIX = 0;
+            var anguloCIY = 0;
+            var anguloCIZ = 0;
+
+            init();
+            animate();
+
+            function init() {
+                scene = new THREE.Scene();
+                aspect = window.innerWidth / window.innerHeight;
+                camera = new THREE.PerspectiveCamera(100, aspect,0.1, 1000);
+                renderer = new THREE.WebGLRenderer();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                document.body.appendChild(renderer.domElement);
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+				
+				stats = new Stats();
+				document.body.appendChild( stats.dom );
+
+                
+
+                //ELEMENTOS DE ESCENA
+
+                var size = 10;
+                var arrowSize = 1;
+                var divisions = size;
+                var origin = new THREE.Vector3(0, 0, 0);
+                var x = new THREE.Vector3(1, 0, 0);
+                var y = new THREE.Vector3(0, 1, 0);
+                var z = new THREE.Vector3(0, 0, 1);
+                var color1 = new THREE.Color(0xFFFFFF);
+                var color2 = new THREE.Color(0x333333);
+                var colorR = new THREE.Color(0xAA0000);
+                var colorG = new THREE.Color(0x00AA00);
+                var colorB = new THREE.Color(0x0000AA);
+                var colorRd = new THREE.Color(0xAA6666);
+                var colorGd = new THREE.Color(0x66AA66);
+                var colorBd = new THREE.Color(0x6666AA);
+
+                //CREAR LAS GRILLAS PARA EL ESCENARIO
+                var axesHelper = new THREE.AxesHelper(size);
+                var gridHelperXY = new THREE.GridHelper(size, divisions, color1, color1);
+                var gridHelperXZ = new THREE.GridHelper(size, divisions, color2, color2);
+                var gridHelperYZ = new THREE.GridHelper(size, divisions, color2, color2);
+
+                //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+                gridHelperXY.rotateOnWorldAxis(x, THREE.Math.degToRad(90));
+                gridHelperXZ.rotateOnWorldAxis(y, THREE.Math.degToRad(90));
+                gridHelperYZ.rotateOnWorldAxis(z, THREE.Math.degToRad(90));
+
+                //CREAR LAS FLECHAS QUE INDICAN LOS EJES DE COORDENADAS 3D
+                var arrowX = new THREE.ArrowHelper(x, origin, arrowSize, colorR);
+                var arrowY = new THREE.ArrowHelper(y, origin, arrowSize, colorG);
+                var arrowZ = new THREE.ArrowHelper(z, origin, arrowSize, colorB);
+
+                //CREAR LAS GEOMETRÍAS
+                geometry = new THREE.BoxGeometry(1, 1, 1);
+                for (var i = 0; i < geometry.faces.length; i++) {
+                    switch (i) {
+                        case 0: case 1: geometry.faces[i].color = colorRd; break;
+                        case 2: case 3: geometry.faces[i].color = colorRd; break;
+                        case 4: case 5: geometry.faces[i].color = colorGd; break;
+                        case 6: case 7: geometry.faces[i].color = colorGd; break;
+                        case 8: case 9: geometry.faces[i].color = colorBd; break;
+                        case 10: case 11: geometry.faces[i].color = colorBd; break;
+                    }
+                }
+                var geoCilindro = new THREE.Geometry();
+                var zTemp = 0;
+                var res = 25.0;
+                for( var i = 0; i < res; i++){
+                    for( var j = 0; j < res; j++){
+                        var punto = new THREE.Vector3();
+                        punto.x = 3 * Math.cos( ( j * 2 * Math.PI )/res);
+                        punto.y = 8 * i/res;
+                        punto.z = 3 * Math.sin( ( j * 2 * Math.PI )/res);
+                        geoCilindro.vertices.push( punto );
+                    }
+                }
+                var geoEsfera = new THREE.Geometry();
+                var zTemp = 0;
+                var resXY = 20.0;
+			     var resZ = 20.0;
+                for( var i = 0; i < resZ; i++){
+                    for( var j = 0; j < resXY; j++){
+                        var punto = new THREE.Vector3();
+                        punto.x = 5 * Math.cos( ( j * 2 * Math.PI )/resXY) * Math.sin( ( i * Math.PI )/ resZ) ;
+                        punto.y = 5 * Math.sin( ( j * 2 * Math.PI )/resXY) * Math.sin( ( i * Math.PI )/ resZ) ;
+                        punto.z = 5 * Math.cos( ( i * Math.PI )/resZ) ;
+                        geoEsfera.vertices.push( punto );
+                    } 
+                }
+
+                //CREAR LOS MATERIALES
+                var material = new THREE.MeshBasicMaterial({ color: color1, vertexColors: THREE.FaceColors });
+                var matLinea = new THREE.PointsMaterial( { color: 0xFFFFFF } );
+                var matPunto = new THREE.PointsMaterial( { color: 0xAA6666, size: 0.1 } );
+
+                //CREAR LOS OBJETOS
+                torso = new THREE.Points(geoCilindro, matPunto);   //Torso eje central
+                
+                var axis = new THREE.AxesHelper(5);
+                torso.add(axis);
+                
+                //object.translateOnAxis( new THREE.Vector3(1, 1, 1).normalize(), 2 );
+                esferaDer =  new THREE.Points(geoEsfera, matPunto);    //Circulito de la pierna derecha
+                esferaDer.applyMatrix( new THREE.Matrix4().makeScale(.3,.3,.3) );
+			    esferaDer.applyMatrix( new THREE.Matrix4().makeTranslation(-1.7,-.75,0) );
+                
+                var axisDer = new THREE.AxesHelper(5);
+                axisDer.applyMatrix( new THREE.Matrix4().makeTranslation(-1.7,-.75,0) );
+                esferaDer.add(axisDer);
+                
+                esferaIzq =  new THREE.Points(geoEsfera, matPunto);    //Circulito de la pierna izquierda
+                esferaIzq.applyMatrix( new THREE.Matrix4().makeScale(.3,.3,.3) );
+			    esferaIzq.applyMatrix( new THREE.Matrix4().makeTranslation(1.7,-.75,0) );
+                
+                
+                PiernaDer =  new THREE.Points(geoCilindro, matPunto);    //Femur de la pierna derecha
+                PiernaDer.applyMatrix( new THREE.Matrix4().makeScale(1,2,1) );
+			    PiernaDer.applyMatrix( new THREE.Matrix4().makeTranslation(0,-20,0) );
+                
+                PiernaIzq =  new THREE.Points(geoCilindro, matPunto);    //Femur de la pierna izquierda
+                PiernaIzq.applyMatrix( new THREE.Matrix4().makeScale(1,2,1) );
+			    PiernaIzq.applyMatrix( new THREE.Matrix4().makeTranslation(0,-20,0) );
+                
+                
+                rodillaDer =  new THREE.Points(geoEsfera, matPunto);    //Rodilla de la pierna derecha
+                rodillaDer.applyMatrix( new THREE.Matrix4().makeScale(0.6,.3,.6) );
+			    rodillaDer.applyMatrix( new THREE.Matrix4().makeTranslation(0,-.75,0) );
+                
+                var axisR = new THREE.AxesHelper(5);
+                rodillaDer.add(axisR);
+                
+                rodillaIzq =  new THREE.Points(geoEsfera, matPunto);    //Rodilla de la pierna derecha
+                rodillaIzq.applyMatrix( new THREE.Matrix4().makeScale(0.6,.3,.6) );
+			    rodillaIzq.applyMatrix( new THREE.Matrix4().makeTranslation(0,-.75,0) );
+                
+                
+                MusloDer =  new THREE.Points(geoCilindro, matPunto);    //Muslo de la pierna derecha
+                MusloDer.applyMatrix( new THREE.Matrix4().makeScale(1.7,2,1.7) );
+			    MusloDer.applyMatrix( new THREE.Matrix4().makeTranslation(0,-18,0) );
+                
+                MusloIzq =  new THREE.Points(geoCilindro, matPunto);    //Muslo de la pierna izquierda
+                MusloIzq.applyMatrix( new THREE.Matrix4().makeScale(1.7,2,1.7) );
+			    MusloIzq.applyMatrix( new THREE.Matrix4().makeTranslation(0,-18,0) );
+                
+                
+                hombroDer =  new THREE.Points(geoEsfera, matPunto);    //hombro del brazo derecho
+                hombroDer.applyMatrix( new THREE.Matrix4().makeScale(0.3,.3,.3) );
+			    hombroDer.applyMatrix( new THREE.Matrix4().makeTranslation(-2.5,6.5,0) );
+                
+                hombroIzq =  new THREE.Points(geoEsfera, matPunto);    //hombro del brazo derecho
+                hombroIzq.applyMatrix( new THREE.Matrix4().makeScale(0.3,.3,.3) );
+			    hombroIzq.applyMatrix( new THREE.Matrix4().makeTranslation(2.5,6.5,0) );
+                
+                
+                antebrazoDer =  new THREE.Points(geoCilindro, matPunto);    //Antebrazo del brazo derecho
+                antebrazoDer.applyMatrix( new THREE.Matrix4().makeScale(1.2,1.8,1.2) );
+			    antebrazoDer.applyMatrix( new THREE.Matrix4().makeTranslation(0,-17,0) );
+                antebrazoDer.applyMatrix( new THREE.Matrix4().makeRotationZ(-70) ); //Se roto en el ele Z pa q el cilindro del antebarzo para que no se vea pa abajo
+                
+                antebrazoIzq =  new THREE.Points(geoCilindro, matPunto);    //Antebrazo del brazo izquierdo
+                antebrazoIzq.applyMatrix( new THREE.Matrix4().makeScale(1.2,1.8,1.2) );
+			    antebrazoIzq.applyMatrix( new THREE.Matrix4().makeTranslation(0,-17,0) );
+                antebrazoIzq.applyMatrix( new THREE.Matrix4().makeRotationZ(70) ); //lo mismo pero con el antbrazo izquierdo
+                
+                
+                codoDer =  new THREE.Points(geoEsfera, matPunto);    //hombro del brazo derecho
+                codoDer.applyMatrix( new THREE.Matrix4().makeScale(0.6,0.4,0.6) );
+			    codoDer.applyMatrix( new THREE.Matrix4().makeTranslation(0,0,0) );
+                
+                codoIzq =  new THREE.Points(geoEsfera, matPunto);    //hombro del brazo Izquierdo
+                codoIzq.applyMatrix( new THREE.Matrix4().makeScale(0.6,0.4,0.6) );
+			    codoIzq.applyMatrix( new THREE.Matrix4().makeTranslation(0,0,0) );
+                
+                
+                brazoDer =  new THREE.Points(geoCilindro, matPunto);    //Brazo derecho
+                brazoDer.applyMatrix( new THREE.Matrix4().makeScale(1.5,2,1.5) );
+			    brazoDer.applyMatrix( new THREE.Matrix4().makeTranslation(0,-18,0) );
+                
+                brazoIzq =  new THREE.Points(geoCilindro, matPunto);    //Brazo izquierdo
+                brazoIzq.applyMatrix( new THREE.Matrix4().makeScale(1.5,2,1.5) );
+			    brazoIzq.applyMatrix( new THREE.Matrix4().makeTranslation(0,-18,0) );
+                
+                
+                cuello =  new THREE.Points(geoCilindro, matPunto); 
+                cuello.applyMatrix( new THREE.Matrix4().makeScale(0.3,0.2,0.3) );
+			    cuello.applyMatrix( new THREE.Matrix4().makeTranslation(0,7,0) );
+                
+                
+                cabeza =  new THREE.Points(geoEsfera, matPunto);    //cabeza
+                cabeza.applyMatrix( new THREE.Matrix4().makeScale(1,1.2,1) );
+			    cabeza.applyMatrix( new THREE.Matrix4().makeTranslation(0,12,0) );
+                
+
+                //AGREGAR A LA ESCENA
+                //scene.add(gridHelperXZ);
+                scene.add(arrowX);
+                scene.add(arrowY);
+                scene.add(arrowZ);
+                scene.add(torso);
+                
+                // paderes e hijos
+                torso.add(esferaDer);
+                torso.add(esferaIzq);
+                torso.add(hombroDer);
+                torso.add(hombroIzq);
+                torso.add(cuello);
+                
+                esferaDer.add(PiernaDer);
+                esferaIzq.add(PiernaIzq);
+                
+                PiernaDer.add(rodillaDer);
+                PiernaIzq.add(rodillaIzq);
+                
+                rodillaDer.add(MusloDer);
+                rodillaIzq.add(MusloIzq);
+                
+                hombroDer.add(antebrazoDer);
+                hombroIzq.add(antebrazoIzq);
+                
+                antebrazoDer.add(codoDer);
+                antebrazoIzq.add(codoIzq);
+                
+                codoDer.add(brazoDer);
+                codoIzq.add(brazoIzq);
+                
+                cuello.add(cabeza);
+
+                //ANGULOS DE ROTACION
+                var rotationAngles = {
+                    CuerpoX: 0,
+                    CuerpoY: 0,
+                    CuerpoZ: 0,
+                    PiernaDer: 0,
+                    PiernaIzq: 0,
+                    RodillaD: 0,
+                    RodillaI: 0,
+                    HombroDY: 0,
+                    HombroDZ: 0,
+                    HombroIY: 0,
+                    HombroIZ: 0,
+                    CodoDX: 0,
+                    CodoIX: 0
+                };
+
+                var rotation = function () {
+                    angleX = THREE.Math.degToRad(rotationAngles.CuerpoX);
+                    angleY = THREE.Math.degToRad(rotationAngles.CuerpoY);
+                    angleZ = THREE.Math.degToRad(rotationAngles.CuerpoZ);
+                    
+                    render();
+                };
+                
+                 var rotation3 = function () {
+                    anguloPDX = THREE.Math.degToRad(rotationAngles.PiernaDer);
+                    render();
+                };
+                var rotation4 = function () {
+                    anguloPIX = THREE.Math.degToRad(rotationAngles.PiernaIzq);
+                    render();
+                };
+                var rotation5 = function () {
+                    anguloRDX = THREE.Math.degToRad(rotationAngles.RodillaD);
+                    render();
+                };
+                var rotation6 = function () {
+                    anguloRIX = THREE.Math.degToRad(rotationAngles.RodillaI);
+                    render();
+                };
+                var rotation7 = function () {
+                    anguloHDY = THREE.Math.degToRad(rotationAngles.HombroDY);
+                    anguloHDZ = THREE.Math.degToRad(rotationAngles.HombroDZ);
+                    render();
+                };
+                var rotation8 = function () {
+                    anguloHIY = THREE.Math.degToRad(rotationAngles.HombroIY);
+                    anguloHIZ = THREE.Math.degToRad(rotationAngles.HombroIZ);
+                    render();
+                };
+                var rotation9 = function () {
+                    anguloCDX = THREE.Math.degToRad(rotationAngles.CodoDX);
+                    render();
+                };
+                var rotation10 = function () {
+                    anguloCIX = THREE.Math.degToRad(rotationAngles.CodoIX);
+                    render();
+                };
+
+                var gui = new dat.GUI();
+                gui.add(rotationAngles, "CuerpoX", -180, 180, .1).onChange(rotation);
+                gui.add(rotationAngles, "CuerpoY", -90, 90, 1).onChange(rotation);
+                gui.add(rotationAngles, "CuerpoZ", -90, 90, 1).onChange(rotation);
+				
+                gui.add(rotationAngles, "PiernaDer", -90, 90, 1).onChange(rotation3);
+                gui.add(rotationAngles, "PiernaIzq", -90, 90, 1).onChange(rotation4);
+                gui.add(rotationAngles, "RodillaD", -0, 90, 1).onChange(rotation5);
+                gui.add(rotationAngles, "RodillaI", -0, 90, 1).onChange(rotation6);
+                gui.add(rotationAngles, "HombroDY", -60, 90, 1).onChange(rotation7);
+                gui.add(rotationAngles, "HombroDZ", -90, 30, 1).onChange(rotation7);
+                gui.add(rotationAngles, "HombroIY", -90, 60, 1).onChange(rotation8);
+                gui.add(rotationAngles, "HombroIZ", -30, 90, 1).onChange(rotation8);
+                gui.add(rotationAngles, "CodoDX", -120, 0, 1).onChange(rotation9);
+                gui.add(rotationAngles, "CodoIX", -120, 0, 1).onChange(rotation10);
+
+               
+
+                //MOVER LA CAMARA
+                camera.position.x = 5;
+                camera.position.y = 10;
+                camera.position.z = 10;
+
+                camera.lookAt(origin);
+            }
+            
+            function animate() {
+                render();
+                requestAnimationFrame(animate);
+				stats.update();
+            }
+
+            function render() {
+                var dtime = Date.now() - startTime;
+
+                //console.log(angleX + " " + angleY + " " + angleZ);
+
+				// Other possibilities are: 'YZX', 'ZXY', 'XZY', 'YXZ' and 'ZYX'. 
+				// XYZ: Rota teniendo en cuenta el marco de referencia local (del objeto).
+				// ZYX: Rota alrededor del marco de referencia de la escena
+                var eulerRot = new THREE.Euler(angleX, angleY, angleZ, 'YZX');
+                var eulerRotDer = new THREE.Euler(anguloPDX, anguloPDY, anguloPDZ, 'XYZ');
+                var eulerRotIzq = new THREE.Euler(anguloPIX, anguloPIY, anguloPIZ, 'XYZ');
+                var eulerRotRDer = new THREE.Euler(anguloRDX, anguloRDY, anguloRDZ, 'XYZ');
+                var eulerRotRIzq = new THREE.Euler(anguloRIX, anguloRIY, anguloRIZ, 'XYZ');
+                var eulerRotHDer = new THREE.Euler(anguloHDX, anguloHDY, anguloHDZ, 'XYZ');
+                var eulerRotHIzq = new THREE.Euler(anguloHIX, anguloHIY, anguloHIZ, 'XYZ');
+                var eulerRotCDer = new THREE.Euler(anguloCDX, anguloCDY, anguloCDZ, 'XYZ');
+                var eulerRotCIzq = new THREE.Euler(anguloCIX, anguloCIY, anguloCIZ, 'XYZ');
+
+                torso.setRotationFromEuler(eulerRot);
+                
+                esferaDer.setRotationFromEuler(eulerRotDer);
+                esferaIzq.setRotationFromEuler(eulerRotIzq);
+                
+                rodillaDer.setRotationFromEuler(eulerRotRDer);
+                rodillaIzq.setRotationFromEuler(eulerRotRIzq);
+                
+                hombroDer.setRotationFromEuler(eulerRotHDer);
+                hombroIzq.setRotationFromEuler(eulerRotHIzq);
+                
+                codoDer.setRotationFromEuler(eulerRotCDer);
+                codoIzq.setRotationFromEuler(eulerRotCIzq);
+                
+                camera.lookAt(0, 0, 0);
+                renderer.render(scene, camera);
+                
+                
+               
+                }
+        </script>
+    </body>
+</html>
+>>>>>>> 0122c7a0abd7ff4561e89df9d30e906b25ff9b14
