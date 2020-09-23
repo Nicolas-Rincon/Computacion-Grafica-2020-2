@@ -58,6 +58,8 @@
             //GEOMETRÍA
             var geoTriangulo = new THREE.Geometry();
             var geoTriangulo1 = new THREE.Geometry();
+            var geoTriangulo2 = new THREE.Geometry();
+            var geoTriangulo3 = new THREE.Geometry();
 			//VERTICES
 			var v0 = new THREE.Vector3( 5, 0, 0);
 			var v1 = new THREE.Vector3( 0, 5, 0);
@@ -67,6 +69,14 @@
 			var v4 = new THREE.Vector3( 0, 5, 0);
 			var v5 = new THREE.Vector3( 0, 0, -5);
             
+            var v6 = new THREE.Vector3( 0, 0, -5);
+			var v7 = new THREE.Vector3( 0, 5, 0);
+			var v8 = new THREE.Vector3( 5, 0, 0);
+            
+            var v9 = new THREE.Vector3( 0, 0, 5);
+			var v10 = new THREE.Vector3( 0, 5, 0);
+			var v11 = new THREE.Vector3( -5, 0, 0);
+            
 			geoTriangulo.vertices.push( v0 );
 			geoTriangulo.vertices.push( v1 );
 			geoTriangulo.vertices.push( v2 );
@@ -74,20 +84,42 @@
             geoTriangulo1.vertices.push( v3 );
 			geoTriangulo1.vertices.push( v4 );
 			geoTriangulo1.vertices.push( v5 );
+            
+            geoTriangulo2.vertices.push( v6 );
+			geoTriangulo2.vertices.push( v7 );
+			geoTriangulo2.vertices.push( v8 );
+            
+            geoTriangulo3.vertices.push( v9 );
+			geoTriangulo3.vertices.push( v10 );
+			geoTriangulo3.vertices.push( v11 );
+            
 			//CARAS
 			geoTriangulo.faces.push( new THREE.Face3(0,1,2) );
 			geoTriangulo.computeFaceNormals();
             
-            geoTriangulo1.faces.push( new THREE.Face3(3,4,5) );
+            geoTriangulo1.faces.push( new THREE.Face3(0,1,2) );
 			geoTriangulo1.computeFaceNormals();
+            
+            geoTriangulo2.faces.push( new THREE.Face3(0,1,2) );
+			geoTriangulo2.computeFaceNormals();
+            
+            geoTriangulo3.faces.push( new THREE.Face3(0,1,2) );
+			geoTriangulo3.computeFaceNormals();
+            
 			//MATERIAL Y CREACIÓN DEL OBJETO
             var matPlano = new THREE.MeshBasicMaterial( { color: 0xFFFFFF } );
 			//CREAR LOS OBJETOS
 			var triangulo = new THREE.Mesh( geoTriangulo, matPlano );
             var triangulo1 = new THREE.Mesh( geoTriangulo1, matPlano );
+            var triangulo2 = new THREE.Mesh( geoTriangulo2, matPlano );
+            var triangulo3 = new THREE.Mesh( geoTriangulo3, matPlano );
+            
 		  	//AGREGAR A LA ESCENA
 		  	scene.add( triangulo );
             scene.add( triangulo1 );
+            scene.add( triangulo2 );
+            scene.add( triangulo3 );
+            
             scene.add( gridHelperXZ );
 		  	scene.add( arrowX );	
 		  	scene.add( arrowY );	
