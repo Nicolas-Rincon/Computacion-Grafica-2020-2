@@ -60,6 +60,8 @@
             var geoTriangulo1 = new THREE.Geometry();
             var geoTriangulo2 = new THREE.Geometry();
             var geoTriangulo3 = new THREE.Geometry();
+            var geoTriangulo4 = new THREE.Geometry();
+            var geoTriangulo5 = new THREE.Geometry();
 			//VERTICES
 			var v0 = new THREE.Vector3( 5, 0, 0);
 			var v1 = new THREE.Vector3( 0, 5, 0);
@@ -93,6 +95,14 @@
 			geoTriangulo3.vertices.push( v10 );
 			geoTriangulo3.vertices.push( v11 );
             
+            geoTriangulo4.vertices.push( v0 );
+			geoTriangulo4.vertices.push( v3 );
+			geoTriangulo4.vertices.push( v6 );
+            
+            geoTriangulo5.vertices.push( v0 );
+			geoTriangulo5.vertices.push( v9 );
+			geoTriangulo5.vertices.push( v3 );
+            
 			//CARAS
 			geoTriangulo.faces.push( new THREE.Face3(0,1,2) );
 			geoTriangulo.computeFaceNormals();
@@ -106,6 +116,12 @@
             geoTriangulo3.faces.push( new THREE.Face3(0,1,2) );
 			geoTriangulo3.computeFaceNormals();
             
+            geoTriangulo4.faces.push( new THREE.Face3(0,1,2) );
+			geoTriangulo4.computeFaceNormals();
+            
+            geoTriangulo5.faces.push( new THREE.Face3(0,1,2) );
+			geoTriangulo5.computeFaceNormals();
+            
 			//MATERIAL Y CREACIÓN DEL OBJETO
             var matPlano = new THREE.MeshBasicMaterial( { color: 0xFFFFFF } );
 			//CREAR LOS OBJETOS
@@ -113,12 +129,16 @@
             var triangulo1 = new THREE.Mesh( geoTriangulo1, matPlano );
             var triangulo2 = new THREE.Mesh( geoTriangulo2, matPlano );
             var triangulo3 = new THREE.Mesh( geoTriangulo3, matPlano );
+            var triangulo4 = new THREE.Mesh( geoTriangulo4, matPlano );
+            var triangulo5 = new THREE.Mesh( geoTriangulo5, matPlano );
             
 		  	//AGREGAR A LA ESCENA
 		  	scene.add( triangulo );
             scene.add( triangulo1 );
             scene.add( triangulo2 );
             scene.add( triangulo3 );
+            scene.add( triangulo4 );
+            scene.add( triangulo5 );
             
             scene.add( gridHelperXZ );
 		  	scene.add( arrowX );	
