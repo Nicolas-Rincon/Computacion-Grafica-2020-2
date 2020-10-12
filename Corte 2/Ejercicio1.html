@@ -39,9 +39,6 @@
 		  	var colorB = new THREE.Color( 0x333366 );
 			
 		  	//CREAR LAS GRILLAS PARA EL ESCENARIO
-		  	var axesHelper = new THREE.AxesHelper( size );
-			scene.add( axesHelper );
-			
 		  	var gridHelperXZ = new THREE.GridHelper( size, divisions, color, color );
 			scene.add( gridHelperXZ );
             
@@ -59,8 +56,11 @@
 			//CREAR LAS GEOMETRÍAS
 			var boxGeometry = new THREE.BoxGeometry( 5, 0.2, 3 );
 			var boxGeometry1 = new THREE.BoxGeometry( 5, 3, 0.2 );
-			var boxGeometry2 = new THREE.BoxGeometry( 1, 0.2, 0.7 ); //Touch pad
 			var CylinderGeometry = new THREE.CylinderGeometry(0.1,0.1,3.0,25,1);
+			
+			var boxGeometry2 = new THREE.BoxGeometry( 1, 0.2, 0.7 ); //Touchpad
+			var boxGeometry3 = new THREE.BoxGeometry( 2, 0.6, 2 ); 
+			var sphereGeometry = new THREE.SphereGeometry( 0.5, 32, 32 );  //Mouse
 						
 			//CREAR LOS MATERIALES
             var material1 = new THREE.MeshStandardMaterial( { color: colorR, metalness: 0.5, roughness: 0.1 } );
@@ -69,15 +69,20 @@
 			//CREAR LAS MALLAS
 			var cube = new THREE.Mesh( boxGeometry );
 			var cube1 = new THREE.Mesh( boxGeometry1 );
-			var cube2 = new THREE.Mesh( boxGeometry2 );  //Touchpad
 			var cilindro = new THREE.Mesh( CylinderGeometry );
-			cube1.translateX( 0 );
-			cube1.translateY( 1.7 );
-			cube1.translateZ( -1.5 );
+			
+			var cube2 = new THREE.Mesh( boxGeometry2 );  //Touchpad
+			var cube3 = new THREE.Mesh( boxGeometry3 ); 
+			var esfera = new THREE.Mesh( sphereGeometry );  //Mouse
+			
+			cube1.applyMatrix( new THREE.Matrix4().makeTranslation(0,1.68,-1.6) );
 			cilindro.applyMatrix( new THREE.Matrix4().makeTranslation(0.1,0,-1.5) );
 			cilindro.applyMatrix( new THREE.Matrix4().makeRotationZ(89.54) );
 			
-			cube2.applyMatrix( new THREE.Matrix4().makeTranslation(0,0.01,0.9) );
+			cube2.applyMatrix( new THREE.Matrix4().makeTranslation(0,0.005,0.9) );
+			esfera.applyMatrix( new THREE.Matrix4().makeTranslation(4,0,0) );
+			esfera.applyMatrix( new THREE.Matrix4().makeScale(1,1,2) );
+			cube3.applyMatrix( new THREE.Matrix4().makeTranslation(4,-0.32,0) );
 			
 			//CONVERTIR A CSG
 			var boxCSG = THREE.CSG.fromMesh( cube );
@@ -85,29 +90,85 @@
 			var cilindroCSG = THREE.CSG.fromMesh( cilindro );
 			
 			var box2CSG = THREE.CSG.fromMesh( cube2 );
+			var sphereCSG = THREE.CSG.fromMesh( esfera );
+			var box3CSG = THREE.CSG.fromMesh( cube3 );
 			
 			//APLICAR LAS OPERACIONES
 			var result = box1CSG.subtract( cilindroCSG );	//Resta ( rectangulo pantalla MENOS cilindro )
 			var result1 = cilindroCSG.union( boxCSG );     // union del cilindro y rectangulo base
 			
 			var result2 = box2CSG.subtract( boxCSG );    // Resta del touchpad y rectangulo base
+			var result3 = sphereCSG.subtract( box3CSG );    // Resta del mouse y un rectangulo
 			
 			//CONVERTIR A THREE
 			cube = THREE.CSG.toMesh( result );
 			cube1 = THREE.CSG.toMesh( result1 );
 			cube2 = THREE.CSG.toMesh( result2 );
+			sphera = THREE.CSG.toMesh( result3 );
 			cube.material = material1;
 			cube1.material = material1;
 			cube2.material = material2;
+			sphera.material = material2;
+			
+			
 			
 			//AGREGAR A LA ESCENA LOS DIFERENTES ELEMENTOS
 			scene.add( cube );		// rectangulo base
 			scene.add( cube1 );		// rectangulo pantalla
-			scene.add(cube2);
+			scene.add(cube2);       // Touchpad
+			scene.add(sphera);      //Mause
 
-			camera.position.x = 2;
-			camera.position.y = 2;
-		  	camera.position.z = 5;
+			
+			var curve2D = [];
+                curve2D[0] = new THREE.Vector2( -3, 1 );
+                curve2D[1] = new THREE.Vector2( -4,4 );
+                curve2D[2] = new THREE.Vector2( -1, 4 );
+                curve2D[3] = new THREE.Vector2( 3, 3 );
+                curve2D[4] = new THREE.Vector2( 4, 1 );
+                curve2D[5] = new THREE.Vector2( 5, 0.5 );
+                curve2D[5] = new THREE.Vector2( 4, 0.8 );
+                curve2D[6] = new THREE.Vector2( 3, 2.9 );		
+                curve2D[7] = new THREE.Vector2( 1, 3.4);
+                curve2D[8] = new THREE.Vector2( -3.8, 4);
+                curve2D[9] = new THREE.Vector2( -3, 1.2);
+                curve2D[10] = new THREE.Vector2( -1,0.5 );
+				
+			var shape = new THREE.Shape();
+			shape.moveTo(0,0);
+			shape.splineThru(curve2D);
+            
+            var material = new THREE.LineBasicMaterial( { color : 0x333366 } );
+            var resolution = 50;
+            var points = shape.getPoints( resolution );
+            var geometry = new THREE.BufferGeometry().setFromPoints( points );
+            // Create the final object to add to the scene
+            var curveObject = new THREE.Line( geometry, material );
+            
+			//EXTRUDE
+			var extrudeSettings = {
+				steps: 2,
+				amount: 0.1,
+				bevelEnabled: false,
+			};
+
+			var geometryExt = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+			var materialExt= new THREE.MeshStandardMaterial( { 
+				color: 0x333366, 
+				metalness: 0.5, 
+				roughness: 0.1,
+							
+			} );
+			
+			var mesh = new THREE.Mesh( geometryExt, materialExt ) ;
+			mesh.rotateX( -1.575 );
+			scene.add( mesh );
+			scene.add( curveObject );
+			curveObject.rotateX( -1.575 );
+			
+			
+			camera.position.x = 7;
+			camera.position.y = 7;
+		  	camera.position.z = 10;
 			camera.lookAt( origin );
 		}
 		function animate(){
