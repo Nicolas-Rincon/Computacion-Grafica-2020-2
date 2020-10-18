@@ -4,6 +4,13 @@
     <title> Movimiento del vehiculo </title>
     <style>
       html, body { margin: 0; padding: 0; overflow: hidden; }
+		#info {
+                position: absolute;
+                padding: 10px;
+                width: 100%;
+                text-align: center;
+                color: #FFFFFF;
+            }
     </style>
   </head>
   <body>
@@ -41,7 +48,6 @@
 			renderer = new THREE.WebGLRenderer();
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
-            //controls = new THREE.OrbitControls( camera, renderer.domElement );
 			
 			//EVENTOS DE TECLADO
 			
@@ -792,7 +798,6 @@
     
     function animate() {
         requestAnimationFrame( animate );
-        //controls.update();
         render();
     }
     
