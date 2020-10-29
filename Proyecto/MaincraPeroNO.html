@@ -24,7 +24,6 @@
 		</div>
 		<script src="js/three.js"></script>
 		<script src="js/three.min.js"></script>
-		<script src="js/OrbitControls.js"></script>
 		<script src="js/csg.js"></script>
 		<script src="js/THREE.CSG.js"></script>
 		<script type="module">
@@ -49,7 +48,7 @@
 			
 			var hips, torso, head;
 			var rightFoot, rightLeg, rightArm, rightHand;
-			var leftFoot, leftLeg, leftArm, leftHand;
+			var leftFoot, brazoI, brazoD, hombros;
 			var startTime = Date.now();
 			
 			var thetaSum=0;
@@ -84,9 +83,11 @@
 				switch ( event.keyCode ) {
 					case 38: // TRASLADAR ADELANTE
 						upArrow = true;
+						hips.translateZ(10);
 						break;
 					case 40: // TRASLADAR ATRÁS
 						downArrow = true;
+						hips.translateZ(-10);
 						break;
 					case 37: // ROTAR CW
 						leftArrow = true;
@@ -184,59 +185,55 @@
 				
 				//creacion del personaje
 				geometryP = new THREE.BoxGeometry( 50, 50, 50 );
-				for ( var i = 0; i < geometryP.faces.length; i ++ ) {
-					switch(i){
-						case 0: case 1: geometryP.faces[ i ].color = colorRd; break;
-						case 2: case 3: geometryP.faces[ i ].color = colorRd; break;
-						case 4: case 5: geometryP.faces[ i ].color = colorGd; break;
-						case 6: case 7: geometryP.faces[ i ].color = colorGd; break;
-						case 8: case 9: geometryP.faces[ i ].color = colorBd; break;
-						case 10: case 11: geometryP.faces[ i ].color = colorBd; break;
-					}				
-				}
+				
 				var material = new THREE.MeshBasicMaterial( { color: color1, vertexColors: THREE.FaceColors } );
+				var material2 = new THREE.MeshBasicMaterial( { color: colorRd, vertexColors: THREE.FaceColors } );
+				var material3 = new THREE.MeshBasicMaterial( { color: colorBd, vertexColors: THREE.FaceColors } );
+				var material4 = new THREE.MeshBasicMaterial( { color: colorGd, vertexColors: THREE.FaceColors } );
 				
-				hips = new THREE.Mesh( geometryP, material );	//CUBO
+				hips = new THREE.Mesh( geometryP, material );	
 				hips.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 100, 0) );
-				hips.applyMatrix( new THREE.Matrix4().makeScale(1.5,2,1.5) );
+				hips.applyMatrix( new THREE.Matrix4().makeScale(1.5,1.5,1.5) );
 				
 			
-				torso = new THREE.Mesh( geometryP, material ); //CILINDRO
-				torso.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 50, 0) );
-				torso.applyMatrix( new THREE.Matrix4().makeScale(0.75,1,0.75) );
+				torso = new THREE.Mesh( geometryP, material4 ); 
+				torso.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 20, 0) );
+				torso.applyMatrix( new THREE.Matrix4().makeScale(0.75,2,0.75) );
 				
-				leftFoot =  new THREE.Mesh( geometryP, material );
-				leftFoot.applyMatrix( new THREE.Matrix4().makeTranslation( -25, -50, 0) );
-				leftFoot.applyMatrix( new THREE.Matrix4().makeScale(0.5,1,0.5) );
+				leftFoot =  new THREE.Mesh( geometryP, material3 );
+				leftFoot.applyMatrix( new THREE.Matrix4().makeTranslation( -25, -30, 0) );
+				leftFoot.applyMatrix( new THREE.Matrix4().makeScale(0.5,2,0.5) );
 				
-				rightFoot = new THREE.Mesh( geometryP, material );
-				rightFoot.applyMatrix( new THREE.Matrix4().makeTranslation( 25, -50, 0) );
-				rightFoot.applyMatrix( new THREE.Matrix4().makeScale(0.5,1,0.5) );
+				rightFoot = new THREE.Mesh( geometryP, material3 );
+				rightFoot.applyMatrix( new THREE.Matrix4().makeTranslation( 25, -30, 0) );
+				rightFoot.applyMatrix( new THREE.Matrix4().makeScale(0.5,2,0.5) );
 				
-				/*leftLeg = torso.clone();
+				hombros = new THREE.Mesh( geometryP, material4 );
+				hombros.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 100, 0) );
+				hombros.applyMatrix( new THREE.Matrix4().makeScale(1.5,0.75, 0.75) );
 				
-				leftLeg.applyMatrix( new THREE.Matrix4().makeScale(50,200,50) );
-				rightLeg = leftLeg.clone();
-				leftLeg.applyMatrix( new THREE.Matrix4().makeTranslation(-50,-100,0) );
-				rightLeg.applyMatrix( new THREE.Matrix4().makeTranslation( .5,-1,0) );
+				brazoD = new THREE.Mesh( geometryP, material4 );
+				brazoD.applyMatrix( new THREE.Matrix4().makeTranslation( 100, 20, 0) );
+				brazoD.applyMatrix( new THREE.Matrix4().makeScale(0.5,2,0.5) );
+				
+				brazoI = new THREE.Mesh( geometryP, material4 );
+				brazoI.applyMatrix( new THREE.Matrix4().makeTranslation( -100, 20, 0) );
+				brazoI.applyMatrix( new THREE.Matrix4().makeScale(0.5,2,0.5) );
+				
+				
+				head = new THREE.Mesh( geometryP, material2 ); 
+				head.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 150, 0) );
+				head.applyMatrix( new THREE.Matrix4().makeScale(0.85,0.75,0.85) );
 			
-				
-				leftFoot.applyMatrix( new THREE.Matrix4().getInverse( leftLeg.matrix ) );
-				leftFoot.applyMatrix( new THREE.Matrix4().makeScale(.5,.5,1) );
-				rightFoot.applyMatrix( new THREE.Matrix4().getInverse( rightLeg.matrix ) );
-				rightFoot.applyMatrix( new THREE.Matrix4().makeScale(.5,.5,1) );
-				leftFoot.applyMatrix( new THREE.Matrix4().makeTranslation(-50,-75,0) );
-				rightFoot.applyMatrix( new THREE.Matrix4().makeTranslation(.5,-.75,0) );*/
-			
-				
-				
 				
 			
 				hips.add(torso);
 				hips.add(leftFoot);
 				hips.add(rightFoot);
-				//leftLeg.add(leftFoot);
-				//rightLeg.add(rightFoot);
+				hips.add(hombros);
+				hips.add(brazoD);
+				hips.add(brazoI);
+				hips.add(head);
 				
 				
 				
@@ -307,7 +304,6 @@
 							objects.push( voxel2 );
 							isS==false;							
 						}
-						controls = new THREE.OrbitControls( camera, renderer.domElement );
 						animate();
 					render();
 				}
@@ -331,87 +327,86 @@
 			
 			function animate() {
         		requestAnimationFrame( animate );
-        		controls.update();
         		render();
     		}
 
 			function render() {
 				var dtime = Date.now()-startTime;
-		var tx=0, ty=0, tz=0;	//Variables para traslacion
-		var sc = 1;				//Variable para escala
-		var theta=0;			//Variable para ángulo de rotacion de piernas
-		var sigma=0;			//Variable para ángulo de rotación de caderas
+				var tx=0, ty=0, tz=0;	//Variables para traslacion
+				var sc = 1;				//Variable para escala
+				var theta=0;			//Variable para ángulo de rotacion de piernas
+				var sigma=0;			//Variable para ángulo de rotación de caderas
 		
-		if(thetaSum>=90*Math.PI/180)
-			positivo = false;
-		if(thetaSum<=-90*Math.PI/180)
-			positivo = true;
+				if(thetaSum>=90*Math.PI/180)
+					positivo = false;
+				if(thetaSum<=-90*Math.PI/180)
+					positivo = true;
 		
-		if(upArrow) {
-			tx=0; ty=0; tz=.1;
-			if(positivo)
-				theta = .1;
-			else
-				theta = -.1;
-		}
-		if(downArrow) {
-			tx=0; ty=0; tz=-.1;
-			if(positivo)
-				theta = .1;
-			else
-				theta = -.1;
-		}
-		thetaSum+=theta;
+				if(upArrow) {
+					tx=0; ty=0; tz=.1;
+					if(positivo)
+						theta = .1;
+					else
+						theta = -.1;
+				}
+				if(downArrow) {
+					tx=0; ty=0; tz=-.1;
+					if(positivo)
+						theta = .1;
+					else
+						theta = -.1;
+				}
+				thetaSum+=theta;
 		
-		if(rightArrow)
-			sigma = -.1;
-		if(leftArrow)
-			sigma = .1;
+				if(rightArrow)
+					sigma = -.1;
+				if(leftArrow)
+					sigma = .1;
 		
-		//MATRIZ DE TRASLACIÓN
-		var t = new THREE.Matrix4();
-		t.set( 	1, 0, 0, tx,
-				0, 1, 0, ty, 
-				0, 0, 1, tz,
-				0, 0, 0, 1	);
+				//MATRIZ DE TRASLACIÓN
+				var t = new THREE.Matrix4();
+				t.set( 	1, 0, 0, tx,
+						0, 1, 0, ty, 
+						0, 0, 1, tz,
+						0, 0, 0, 1	);
 		
-		hips.matrix.multiply(t); 	//APLICAR LA TRASLACIÓN A NIVEL LOCAL
+				hips.matrix.multiply(t); 	//APLICAR LA TRASLACIÓN A NIVEL LOCAL
 		
-		//ROTACIONES
-		var ct1 = Math.cos(theta);
-		var ct2 = Math.cos(-theta);
-		var cs = Math.cos(sigma);
-		var st1 = Math.sin(theta);
-		var st2 = Math.sin(-theta);
-		var ss = Math.sin(sigma);
-		var r = new THREE.Matrix4();
-		var r1 = new THREE.Matrix4();
-		var r2 = new THREE.Matrix4();
+				//ROTACIONES
+				var ct1 = Math.cos(theta);
+				var ct2 = Math.cos(-theta);
+				var cs = Math.cos(sigma);
+				var st1 = Math.sin(theta);
+				var st2 = Math.sin(-theta);
+				var ss = Math.sin(sigma);
+				var r = new THREE.Matrix4();
+				var r1 = new THREE.Matrix4();
+				var r2 = new THREE.Matrix4();
 
-		//MATRIZ DE ROTACIÓN EN EJE Y
-		r.set( 	   cs,  0, ss, 0,
-					0,  1,  0, 0, 
-				  -ss,  0, cs, 0,
-					0,  0,  0, 1 );	
-		//MATRICES DE ROTACIÓN EN EJE LOCAL DE PIERNAS	
-		r1.set( 	1,  0,  0, 0,
-					0, ct1,-st1, 0, 
-					0, st1, ct1, 0,
-					0,  0,  0, 1 );	
-		r2.set( 	1,  0,  0, 0,
-					0, ct2,-st2, 0, 
-					0, st2, ct2, 0,
-					0,  0,  0, 1 );							
+				//MATRIZ DE ROTACIÓN EN EJE Y
+				r.set( 	   cs,  0, ss, 0,
+					  	0,  1,  0, 0, 
+					  	-ss,  0, cs, 0,
+					  	0,  0,  0, 1 );	
+				//MATRICES DE ROTACIÓN EN EJE LOCAL DE PIERNAS	
+				r1.set( 	1,  0,  0, 0,
+					   	0, ct1,-st1, 0, 
+					   	0, st1, ct1, 0,
+					   0,  0,  0, 1 );	
+				r2.set( 	1,  0,  0, 0,
+						0, ct2,-st2, 0, 
+						0, st2, ct2, 0,
+						0,  0,  0, 1 );							
 		
-		//ROTACION EN UN EJE PARALELO
-		var tempMatrix = new THREE.Matrix4();
-		tempMatrix.copyPosition( hips.matrix );
-		hips.applyMatrix( new THREE.Matrix4().getInverse(tempMatrix) );
-		hips.applyMatrix(r);
-		hips.applyMatrix( tempMatrix );
+				//ROTACION EN UN EJE PARALELO
+				var tempMatrix = new THREE.Matrix4();
+				tempMatrix.copyPosition( hips.matrix );
+				hips.applyMatrix( new THREE.Matrix4().getInverse(tempMatrix) );
+				hips.applyMatrix(r);
+				hips.applyMatrix( tempMatrix );
 
-		leftFoot.applyMatrix(r1);
-		rightFoot.applyMatrix(r2);
+				leftFoot.applyMatrix(r1);
+				rightFoot.applyMatrix(r2);
 				
 				renderer.render( scene, camera );
 			}
